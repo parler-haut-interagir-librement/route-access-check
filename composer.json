@@ -1,0 +1,52 @@
+{
+    "name": "phil/route-access-check",
+    "description": "Checks in continuous integration that every route of an application has an access rule: #[IsGranted], access_control entries read with Symfony's request matchers, firewalls without security, and #[PublicRoute] or a route option for the routes public on purpose; with conflicts, unused entries, a baseline and text, JSON, GitHub and JUnit reports",
+    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "security",
+        "routing",
+        "access-control",
+        "static-analysis",
+        "continuous-integration"
+    ],
+    "authors": [
+        {
+            "name": "Philippe Gamache",
+            "email": "philippe@ph-il.ca",
+            "homepage": "https://github.com/ph-il",
+            "role": "Developer"
+        }
+    ],
+    "homepage": "https://ph-il.ca",
+    "require": {
+        "php": ">=8.5",
+        "ext-mbstring": "*",
+        "symfony/http-foundation": "^8.2",
+        "symfony/routing": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^13.4"
+    },
+    "suggest": {
+        "phil/route-access-check-bundle": "To run the check as a console command of a Symfony application, from its router and security configuration",
+        "symfony/security-http": "For the #[IsGranted] attributes the check reads"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Phil\\RouteAccessCheck\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phil\\RouteAccessCheck\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
+        }
+    }
+}
