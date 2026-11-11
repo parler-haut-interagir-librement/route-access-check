@@ -14,7 +14,7 @@ report lists every route with its resolved rule, so that a reviewer sees what pr
 entries that reach no route, so that dead rules are removed. A baseline tolerates the failures of a large application
 while it adopts the check, and only ever shrinks.
 
-It is a plain PHP library, written from scratch, on `symfony/routing` and `symfony/http-foundation`. The
+It is a plain PHP library built on `symfony/routing` and `symfony/http-foundation`. The
 `access_control` entries and the firewalls are matched with the request matchers of symfony/http-foundation, the ones
 Symfony's security uses, on a sample request built for each route. The attributes are read by name through
 reflection: symfony/security-http is not a dependency. Nothing runs in production; the check is a dev and CI tool.

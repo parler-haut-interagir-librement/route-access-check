@@ -1,4 +1,4 @@
-<!-- phil-dev source-sha256=f945197abcdaddb75e6bcb419536282215d73d00eaa918a71bce047f5a4caf8f -->
+<!-- phil-dev source-sha256=87d1ca5fdfca17e50001900cb2f6969cfdb6979d29be94e10a181ae3052e7a3f -->
 # phil/route-access-check
 
 **Chaque route a une règle d'accès, ou dit pourquoi elle est publique : c'est vérifié en intégration continue, avant
@@ -18,7 +18,7 @@ qui la protège. Il liste aussi les entrées `access_control` qui n'atteignent a
 règles mortes. Une ligne de base tolère les échecs d'une grosse application pendant qu'elle adopte la vérification, et
 elle ne fait que rétrécir.
 
-C'est une bibliothèque PHP simple, écrite de zéro, sur `symfony/routing` et `symfony/http-foundation`. Les entrées
+C'est une bibliothèque PHP simple sur `symfony/routing` et `symfony/http-foundation`. Les entrées
 `access_control` et les pare-feu sont comparés avec les correspondants de requête de symfony/http-foundation, ceux
 qu'utilise la sécurité de Symfony, sur une requête d'exemple construite pour chaque route. Les attributs sont lus par
 leur nom au moyen de la réflexion : symfony/security-http n'est pas une dépendance. Rien ne s'exécute en production ;
