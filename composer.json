@@ -1,6 +1,6 @@
 {
     "name": "phil/route-access-check",
-    "description": "Checks in continuous integration that every route of an application has an access rule: #[IsGranted], access_control entries read with Symfony's request matchers, firewalls without security, and #[PublicRoute] or a route option for the routes public on purpose; with conflicts, unused entries, a baseline and text, JSON, GitHub and JUnit reports",
+    "description": "Make sure no route ships unprotected by mistake: a CI check that every route has an access rule or is declared public on purpose, with JSON and JUnit reports.",
     "license": "MIT",
     "type": "library",
     "keywords": [

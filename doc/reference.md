@@ -9,7 +9,7 @@
 | `Phil\RouteAccessCheck\RouteSample` | `final readonly class` | The sample paths and hosts of a route: `all()`, `of()` (the first), `MAX_SAMPLES` |
 | `Phil\RouteAccessCheck\ControllerLocator` | `final readonly class` | The controller of a `_controller` default: `locate()` |
 | `Phil\RouteAccessCheck\Controller` | `final readonly class` | A controller's class, action, file, line and attributes: `attributesNamed()`, `label()` |
-| `Phil\RouteAccessCheck\AccessRule` | `final readonly class` | A rule found for a route: `source`, `effect`, `scope`, `description`, `methods`, `ruleId`, `appliesTo()` |
+| `Phil\RouteAccessCheck\AccessRule` | `final readonly class` | A rule found for a route: `source`, `effect`, `scope`, `description`, `methods`, `ruleId`, `validatedSubject`, `appliesTo()` |
 | `Phil\RouteAccessCheck\AccessEffect` | enum | `protected`, `public`, `unsecured`, `unchecked`, `conditional`; `covers()` |
 | `Phil\RouteAccessCheck\RuleScope` | enum | `route`, `configuration` |
 | `Phil\RouteAccessCheck\IgnoreList` | `final readonly class` | The routes left aside by prefix: `ignores()`, `FRAMEWORK_ROUTE_NAMES`, `FRAMEWORK_PATHS` |

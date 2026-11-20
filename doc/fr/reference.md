@@ -1,4 +1,4 @@
-<!-- phil-dev source-sha256=30227e89707122a0110e321ae7e0adf2face686d5828a8a928192095c0eff671 -->
+<!-- phil-dev source-sha256=975819a5e8ed101e9d69b0e1938bbadcffd2f8d30a1d69e9d5bf0a770b3bd5ea -->
 # Référence
 
 | Type | Genre | Rôle |
@@ -10,7 +10,7 @@
 | `Phil\RouteAccessCheck\RouteSample` | `final readonly class` | Les chemins et les hôtes d'exemple d'une route : `all()`, `of()` (le premier), `MAX_SAMPLES` |
 | `Phil\RouteAccessCheck\ControllerLocator` | `final readonly class` | Le contrôleur d'une valeur par défaut `_controller` : `locate()` |
 | `Phil\RouteAccessCheck\Controller` | `final readonly class` | La classe, l'action, le fichier, la ligne et les attributs d'un contrôleur : `attributesNamed()`, `label()` |
-| `Phil\RouteAccessCheck\AccessRule` | `final readonly class` | Une règle trouvée pour une route : `source`, `effect`, `scope`, `description`, `methods`, `ruleId`, `appliesTo()` |
+| `Phil\RouteAccessCheck\AccessRule` | `final readonly class` | Une règle trouvée pour une route : `source`, `effect`, `scope`, `description`, `methods`, `ruleId`, `validatedSubject`, `appliesTo()` |
 | `Phil\RouteAccessCheck\AccessEffect` | enum | `protected`, `public`, `unsecured`, `unchecked`, `conditional` ; `covers()` |
 | `Phil\RouteAccessCheck\RuleScope` | enum | `route`, `configuration` |
 | `Phil\RouteAccessCheck\IgnoreList` | `final readonly class` | Les routes mises de côté par préfixe : `ignores()`, `FRAMEWORK_ROUTE_NAMES`, `FRAMEWORK_PATHS` |

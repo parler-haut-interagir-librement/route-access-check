@@ -11,7 +11,9 @@ use Phil\RouteAccessCheck\Detector\SecurityAttributeDetector;
 use Phil\RouteAccessCheck\RuleScope;
 use Phil\RouteAccessCheck\Tests\Unit\Fixture\AccountController;
 use Phil\RouteAccessCheck\Tests\Unit\Fixture\AdminController;
+use Phil\RouteAccessCheck\Tests\Unit\Fixture\GuardedPayloadController;
 use Phil\RouteAccessCheck\Tests\Unit\Fixture\MixedController;
+use Phil\RouteAccessCheck\Tests\Unit\Fixture\PayloadController;
 use Phil\RouteAccessCheck\Tests\Unit\Fixture\Routes;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -78,6 +80,23 @@ final class SecurityAttributeDetectorTest extends TestCase
         self::assertSame("#[Gate('ROLE_NAMED')] on ".MixedController::class.'::both for PUT', $both[0]->description);
         self::assertSame(['PUT'], $both[0]->methods);
         self::assertSame(['GET', 'HEAD'], $this->detect(MixedController::class.'::repeated', [$gate])[0]->methods);
+    }
+
+    /**
+     * A subject that names an argument Symfony maps from the request and validates is carried by the rule.
+     */
+    public function testAVoteOnAValidatedArgumentIsMarked(): void
+    {
+        self::assertSame('$order', $this->detect(PayloadController::class.'::update')[0]->validatedSubject);
+        self::assertSame([null, '$order'], array_map(static fn (AccessRule $rule): ?string => $rule->validatedSubject, $this->detect(PayloadController::class.'::guarded')));
+        self::assertSame('$query', $this->detect(PayloadController::class.'::search')[0]->validatedSubject, 'a list of subjects');
+        self::assertSame('$file', $this->detect(PayloadController::class.'::upload')[0]->validatedSubject);
+        self::assertNull($this->detect(PayloadController::class.'::show')[0]->validatedSubject, 'an argument from the route');
+        self::assertNull($this->detect(PayloadController::class.'::unknownSubject')[0]->validatedSubject);
+        self::assertSame('$query', $this->detect(PayloadController::class.'::afterAnArgumentOfTheRoute')[0]->validatedSubject, 'after an argument that is not a subject');
+        self::assertNull($this->detect(PayloadController::class.'::subjectTwice')[0]->validatedSubject, 'the named subject wins over the positional one');
+        self::assertSame([null, '$order'], array_map(static fn (AccessRule $rule): ?string => $rule->validatedSubject, $this->detect(GuardedPayloadController::class)), 'an invokable controller');
+        self::assertNull($this->detect(AdminController::class.'::purge')[0]->validatedSubject);
     }
 
     /**

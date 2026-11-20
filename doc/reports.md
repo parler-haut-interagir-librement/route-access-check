@@ -53,7 +53,7 @@ methods it applies to when not all, and `~` an inexact sample path.
             "name": "api_items", "path": "/api/items", "host": null, "methods": [],
             "controller": "App\\Controller\\ApiController::items", "status": "uncovered", "baselined": false,
             "uncoveredMethods": ["GET", "HEAD", "PATCH", "DELETE", "OPTIONS", "*"], "conflicts": [],
-            "rules": [{"source": "access_control", "effect": "protected", "scope": "configuration", "description": "…", "methods": ["POST", "PUT"], "ruleId": "access_control#3"}],
+            "rules": [{"source": "access_control", "effect": "protected", "scope": "configuration", "description": "…", "methods": ["POST", "PUT"], "ruleId": "access_control#3", "validatedSubject": null}],
             "samplePath": "/api/items", "exactSample": true
         }
     ],

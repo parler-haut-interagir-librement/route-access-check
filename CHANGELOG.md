@@ -4,6 +4,19 @@ All notable changes to `phil/route-access-check` will be documented in this file
 
 Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
+## 0.1.1-alpha - 2026-11-20
+
+A vote on an argument Symfony 8.2 validates before the vote needs a check before it.
+
+### Added
+
+- `AccessRule::$validatedSubject`: the argument of the action an `#[IsGranted]` votes on, when `#[MapRequestPayload]`,
+  `#[MapQueryString]` or `#[MapUploadedFile]` maps it from the request; `SecurityAttributeDetector::MAPPED_ARGUMENTS`.
+  The JSON report writes it beside `ruleId`.
+- A route whose check votes on such an argument, with no check of the configuration and no attribute without a
+  validated subject before it, is a conflict: since Symfony 8.2 the argument is validated before the vote, and a
+  visitor who is not signed in would read the validation errors.
+
 ## 0.1.0-alpha - 2026-11-11
 
 ### Added

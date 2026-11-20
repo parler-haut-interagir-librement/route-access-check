@@ -11,10 +11,13 @@ namespace Phil\RouteAccessCheck;
 final readonly class AccessRule
 {
     /**
-     * @param string            $source      what found it, such as is_granted, access_control or a custom detector's name
-     * @param string            $description the rule as a reader recognises it, such as `#[IsGranted('ROLE_ADMIN')] on App\Admin`
-     * @param list<string>|null $methods     the method labels of the route it applies to; null, all of them
-     * @param string|null       $ruleId      the identifier of a declared rule (see RuleInventory), to find the rules no route uses
+     * @param string            $source           what found it, such as is_granted, access_control or a custom detector's name
+     * @param string            $description      the rule as a reader recognises it, such as `#[IsGranted('ROLE_ADMIN')] on App\Admin`
+     * @param list<string>|null $methods          the method labels of the route it applies to; null, all of them
+     * @param string|null       $ruleId           the identifier of a declared rule (see RuleInventory), to find the rules no route uses
+     * @param string|null       $validatedSubject the argument of the action the check votes on, such as `$order`, when Symfony
+     *                                            maps it from the request and validates it before the vote:
+     *                                            `#[MapRequestPayload]`, `#[MapQueryString]` or `#[MapUploadedFile]`
      */
     public function __construct(
         public string $source,
@@ -23,6 +26,7 @@ final readonly class AccessRule
         public string $description,
         public ?array $methods = null,
         public ?string $ruleId = null,
+        public ?string $validatedSubject = null,
     ) {
     }
 

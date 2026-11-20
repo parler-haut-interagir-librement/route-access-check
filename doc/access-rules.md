@@ -38,6 +38,30 @@ attribute is described as written: a role, an expression, a closure. `IsGranted(
 declaration. Other attribute classes with the same arguments — the checked attribute first — are read the same way
 when `SecurityAttributeDetector` is given their names.
 
+#### A vote on a validated argument
+
+Since Symfony 8.2, when the `subject` of an `#[IsGranted]` — second or named — names an argument mapped from the
+request by `#[MapRequestPayload]`, `#[MapQueryString]` or `#[MapUploadedFile]`, the argument is read and validated
+**before** the vote, and the voter receives the mapped object. A visitor who is not signed in then gets the validation
+errors — which tell the rules of the payload — before being refused, and a constraint that costs, such as an antivirus
+scan of an uploaded file, runs for them.
+
+The detector gives such a rule the argument in `validatedSubject`, such as `$order`. The checker wants a check before
+it: an `access_control` entry with roles, which runs at the firewall, or an `#[IsGranted]` without a validated subject
+written before it — on the class, or above it on the action. Without one, the route is a conflict:
+
+```php
+#[IsGranted('ORDER_EDIT', 'order')] // conflict: nothing checks before the payload is validated
+public function update(#[MapRequestPayload] OrderInput $order): Response
+
+#[IsGranted('IS_AUTHENTICATED')]    // first: refuses a visitor who is not signed in
+#[IsGranted('ORDER_EDIT', 'order')] // then votes on the validated payload
+public function update(#[MapRequestPayload] OrderInput $order): Response
+```
+
+The order of the attributes is the order Symfony checks them in: an `#[IsGranted('IS_AUTHENTICATED')]` written below
+the vote comes too late, and the route is still a conflict.
+
 ### Firewalls and `access_control`
 
 `SecurityConfigDetector` tries the security configuration on each sample request of the route, once per method label,
@@ -117,7 +141,7 @@ For each method label, the rules that apply to it and cover it — protected, pu
 | `public` | Every method is covered, by public or unsecured rules only. | no |
 | `mixed` | Every method is covered; some are protected, the others public. | no |
 | `uncovered` | Some methods have no covering rule. | yes |
-| `conflict` | A route-level public declaration and a check cover the same method, or a check covers a method behind a firewall without security, where it always denies. | yes |
+| `conflict` | A route-level public declaration and a check cover the same method, a check covers a method behind a firewall without security, where it always denies, or a check votes on a validated argument with no check before it. | yes |
 | `ignored` | The `IgnoreList` leaves the route aside. | no |
 
 A conflict outranks an uncovered method. An `access_control` entry of `PUBLIC_ACCESS` and an `#[IsGranted]` on the

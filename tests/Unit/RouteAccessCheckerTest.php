@@ -21,6 +21,8 @@ use Phil\RouteAccessCheck\RuleScope;
 use Phil\RouteAccessCheck\Security\SecurityMap;
 use Phil\RouteAccessCheck\Tests\Unit\Fixture\AccountController;
 use Phil\RouteAccessCheck\Tests\Unit\Fixture\AdminController;
+use Phil\RouteAccessCheck\Tests\Unit\Fixture\GuardedPayloadController;
+use Phil\RouteAccessCheck\Tests\Unit\Fixture\PayloadController;
 use Phil\RouteAccessCheck\Tests\Unit\Fixture\StubDetector;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -108,6 +110,43 @@ final class RouteAccessCheckerTest extends TestCase
         self::assertSame(['declared public by #[PublicRoute], but protected by access_control ROLE_USER'], $report->verdicts[0]->conflicts);
         self::assertSame(['protected by IsGranted for POST behind firewall "dev", where the check always denies'], $report->verdicts[3]->conflicts);
         self::assertSame([], $report->verdicts[1]->conflicts);
+    }
+
+    /**
+     * Since Symfony 8.2, a vote on an argument mapped from the request runs after the argument is validated: without a
+     * check before it, a visitor who is not signed in reads the validation errors. A check of the configuration, or an
+     * attribute written before, comes first.
+     */
+    public function testAVoteOnAValidatedArgumentNeedsACheckBeforeIt(): void
+    {
+        $report = new RouteAccessChecker([new SecurityAttributeDetector(), new StubDetector(['configured' => [$this->rule(AccessEffect::Protected, RuleScope::Configuration, 'access_control ^/orders')]])])->check($this->routes([
+            'update' => new Route('/orders', ['_controller' => PayloadController::class.'::update'], methods: ['PUT']),
+            'guarded' => new Route('/guarded', ['_controller' => PayloadController::class.'::guarded'], methods: ['PUT']),
+            'late' => new Route('/late', ['_controller' => PayloadController::class.'::guardedTooLate'], methods: ['PUT']),
+            'class' => new Route('/class', ['_controller' => GuardedPayloadController::class], methods: ['PUT']),
+            'configured' => new Route('/orders/{id}', ['_controller' => PayloadController::class.'::update'], methods: ['PUT']),
+            'show' => new Route('/show/{id}', ['_controller' => PayloadController::class.'::show'], methods: ['GET']),
+        ]));
+
+        self::assertSame(
+            ['update' => RouteStatus::Conflict, 'guarded' => RouteStatus::Protected, 'late' => RouteStatus::Conflict, 'class' => RouteStatus::Protected, 'configured' => RouteStatus::Protected, 'show' => RouteStatus::Protected],
+            $this->statuses($report->verdicts),
+        );
+        self::assertSame(["protected by #[IsGranted('ORDER_EDIT')] on ".PayloadController::class.'::update, which votes on $order after Symfony validates it: check IS_AUTHENTICATED first, so that a visitor who is not signed in never reads the validation errors'], $report->verdicts[0]->conflicts);
+        self::assertTrue($report->verdicts[2]->fails());
+    }
+
+    public function testEveryVoteOnAValidatedArgumentWithNoCheckBeforeIsListed(): void
+    {
+        $report = new RouteAccessChecker([new StubDetector(['r' => [
+            new AccessRule('stub', AccessEffect::Protected, RuleScope::Route, 'first', null, validatedSubject: '$a'),
+            new AccessRule('stub', AccessEffect::Protected, RuleScope::Route, 'second', null, validatedSubject: '$b'),
+        ]])])->check($this->routes(['r' => new Route('/r', methods: ['POST'])]));
+
+        self::assertSame([
+            'protected by first, which votes on $a after Symfony validates it: check IS_AUTHENTICATED first, so that a visitor who is not signed in never reads the validation errors',
+            'protected by second, which votes on $b after Symfony validates it: check IS_AUTHENTICATED first, so that a visitor who is not signed in never reads the validation errors',
+        ], $report->verdicts[0]->conflicts);
     }
 
     public function testEveryConflictIsListed(): void

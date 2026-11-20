@@ -1,4 +1,4 @@
-<!-- phil-dev source-sha256=f2109ecca2fe2065d67888fec6bd47bf2c719c96c5a7681242f469abd1e68c23 -->
+<!-- phil-dev source-sha256=10d9c4edea68bbe1afa51ef159f385a3fa46be1ec2cc99c5e04a023c57c17a61 -->
 # Règles d'accès
 
 Une vérification lit chaque route et demande ses règles à chaque détecteur. Elle décide ensuite de l'état de la route
@@ -39,6 +39,31 @@ actions. Son argument `methods`, sixième ou nommé, le limite à ces méthodes,
 fait Symfony. L'attribut vérifié est décrit tel qu'il est écrit : un rôle, une expression, une fermeture.
 `IsGranted('PUBLIC_ACCESS')` est une déclaration publique. D'autres classes d'attributs aux mêmes arguments —
 l'attribut vérifié en premier — sont lues de la même façon quand on donne leurs noms à `SecurityAttributeDetector`.
+
+#### Un vote sur un argument validé
+
+Depuis Symfony 8.2, quand le `subject` d'un `#[IsGranted]` — deuxième argument ou nommé — désigne un argument mappé à
+partir de la requête par `#[MapRequestPayload]`, `#[MapQueryString]` ou `#[MapUploadedFile]`, l'argument est lu et
+validé **avant** le vote, et le voter reçoit l'objet mappé. Un visiteur qui n'est pas connecté reçoit alors les erreurs
+de validation — qui révèlent les règles de la charge utile — avant d'être refusé, et une contrainte coûteuse, comme
+l'analyse antivirus d'un fichier téléversé, s'exécute pour lui.
+
+Le détecteur donne à une telle règle l'argument dans `validatedSubject`, comme `$order`. Le vérificateur veut une
+vérification avant elle : une entrée `access_control` avec des rôles, qui s'exécute au pare-feu, ou un `#[IsGranted]`
+sans sujet validé écrit avant elle — sur la classe, ou au-dessus d'elle sur l'action. Sans l'une ou l'autre, la route
+est en conflit :
+
+```php
+#[IsGranted('ORDER_EDIT', 'order')] // conflict: nothing checks before the payload is validated
+public function update(#[MapRequestPayload] OrderInput $order): Response
+
+#[IsGranted('IS_AUTHENTICATED')]    // first: refuses a visitor who is not signed in
+#[IsGranted('ORDER_EDIT', 'order')] // then votes on the validated payload
+public function update(#[MapRequestPayload] OrderInput $order): Response
+```
+
+L'ordre des attributs est l'ordre dans lequel Symfony les vérifie : un `#[IsGranted('IS_AUTHENTICATED')]` écrit sous le
+vote vient trop tard, et la route reste en conflit.
 
 ### Pare-feu et `access_control`
 
@@ -123,7 +148,7 @@ non sécurisées :
 | `public` | Chaque méthode est couverte, par des règles publiques ou non sécurisées seulement. | non |
 | `mixed` | Chaque méthode est couverte ; certaines sont protégées, les autres publiques. | non |
 | `uncovered` | Certaines méthodes n'ont aucune règle qui les couvre. | oui |
-| `conflict` | Une déclaration publique au niveau de la route et une vérification couvrent la même méthode, ou une vérification couvre une méthode derrière un pare-feu sans sécurité, où elle refuse toujours. | oui |
+| `conflict` | Une déclaration publique au niveau de la route et une vérification couvrent la même méthode, une vérification couvre une méthode derrière un pare-feu sans sécurité, où elle refuse toujours, ou une vérification vote sur un argument validé sans vérification avant elle. | oui |
 | `ignored` | La `IgnoreList` met la route de côté. | non |
 
 Un conflit l'emporte sur une méthode non couverte. Une entrée `access_control` de `PUBLIC_ACCESS` et un

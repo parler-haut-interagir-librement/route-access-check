@@ -18,8 +18,10 @@ use Symfony\Component\Routing\RouteCollection;
  *
  * A method is protected as soon as one check covers it, since every check runs; it is public when only public or
  * unsecured rules cover it. A route conflicts when a route-level public declaration and a check cover the same method
- * — the check wins, and the declaration is wrong — or when a check sits behind a firewall without security, where it
- * always denies.
+ * — the check wins, and the declaration is wrong —, when a check sits behind a firewall without security, where it
+ * always denies, or when a check votes on an argument Symfony validates before the vote (`validatedSubject`) and no
+ * check comes before it: a visitor who is not signed in would read the validation errors, and learn the rules of the
+ * payload, before being refused. A check of the security configuration, or an attribute written before, comes first.
  *
  * The ignored routes are still given to the detectors, so that a rule written for them is not reported as unused.
  */
@@ -102,7 +104,7 @@ final readonly class RouteAccessChecker
                 ++$protected;
             }
 
-            foreach ($this->conflictsOf($covering, $checks) as $conflict) {
+            foreach ([...$this->conflictsOf($covering, $checks), ...$this->unauthenticatedVotes($checks)] as $conflict) {
                 $conflicts[$conflict] = $conflict;
             }
         }
@@ -143,6 +145,38 @@ final readonly class RouteAccessChecker
         }
 
         return $conflicts;
+    }
+
+    /**
+     * The checks that vote on a validated argument with no check before them: one of the security configuration, which
+     * runs before the controller, or an attribute found before it.
+     *
+     * @param array<int, AccessRule> $checks the protected rules that cover one method, in the order they were found
+     *
+     * @return list<string>
+     */
+    private function unauthenticatedVotes(array $checks): array
+    {
+        $conflicts = [];
+        $preceded = $this->configured($checks);
+
+        foreach ($checks as $check) {
+            if (null === $check->validatedSubject) {
+                $preceded = true;
+            } elseif (!$preceded) {
+                $conflicts[] = \sprintf('protected by %s, which votes on %s after Symfony validates it: check IS_AUTHENTICATED first, so that a visitor who is not signed in never reads the validation errors', $check->description, $check->validatedSubject);
+            }
+        }
+
+        return $conflicts;
+    }
+
+    /**
+     * @param array<int, AccessRule> $checks
+     */
+    private function configured(array $checks): bool
+    {
+        return array_any($checks, static fn (AccessRule $check): bool => RuleScope::Configuration === $check->scope);
     }
 
     /**

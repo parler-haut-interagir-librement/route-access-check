@@ -1,4 +1,4 @@
-<!-- phil-dev source-sha256=3b0fae5505fed09cf6f0011b102960f3ce0af7b3595700e66f16e25c01e0b5cf -->
+<!-- phil-dev source-sha256=5ddba2ce6e32eb2ebaa43d96bb1db4804528a37e07079a0cbfaea428b17e49ae -->
 # Tests
 
 ## Les tests de la bibliothèque
@@ -6,10 +6,12 @@
 La suite `tests/Unit` teste la lecture des routes — libellés de méthode, contrôleurs sous toutes leurs formes,
 attributs lus par leur nom, chemins et hôtes d'exemple pour chaque genre d'exigence, exemples inexacts —; chaque
 détecteur — `#[IsGranted]` sur la classe et l'action, ses méthodes positionnelles ou nommées, les expressions, les
-fermetures et les arguments illisibles, `#[PublicRoute]` et l'option de route, les pare-feu et les entrées
+fermetures et les arguments illisibles, les votes sur des arguments mappés à partir de la requête, dans une liste de
+sujets et sur un contrôleur invocable, `#[PublicRoute]` et l'option de route, les pare-feu et les entrées
 `access_control` par libellé de méthode, les entrées et les pare-feu conditionnels, les entrées sans rôles, les
 entrées limitées à un hôte, les attributs de route —; la table de sécurité et sa validation ; les états, les conflits
-et les règles inutilisées du vérificateur ; la ligne de base et ses limites ; et chaque format au caractère près.
+et les règles inutilisées du vérificateur, un vote sur un argument validé avec et sans vérification avant lui ; la
+ligne de base et ses limites ; et chaque format au caractère près.
 
 Depuis la racine du monodépôt :
 

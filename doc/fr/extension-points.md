@@ -1,4 +1,4 @@
-<!-- phil-dev source-sha256=49536353d8f807ce03dc2ede0d1fccb6388f67c0b19307d60e2a6ebdd058b5c6 -->
+<!-- phil-dev source-sha256=0392f315919f4e036bd8376d7c845f19d377602974b8fc491b9fd53e6af28c92 -->
 # Points d'extension
 
 La bibliothèque a trois ports, des interfaces de `Phil\RouteAccessCheck\Contract`. Dans Symfony,
@@ -30,6 +30,8 @@ interface AccessRuleDetector
   couvre ; une règle non vérifiée ou conditionnelle ne fait qu'informer.
 - Une règle écrite sur la route (`RuleScope::Route`) et publique entre en conflit avec une vérification sur la même
   méthode ; une règle de la configuration, non.
+- Une règle protégée dont le `validatedSubject` désigne un argument entre en conflit, sauf si une règle protégée de la
+  configuration, ou une règle sans sujet validé retournée avant elle, couvre la même méthode.
 
 Un détecteur pour les routes dont l'option `signed` vaut true, vérifiées par un écouteur de l'application :
 

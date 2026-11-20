@@ -5,9 +5,11 @@
 The suite `tests/Unit` tests the reading of routes — method labels, controllers in every form, attributes read by
 name, sample paths and hosts for each kind of requirement, inexact samples —; each detector — `#[IsGranted]` on class
 and action, its methods positional or named, expressions, closures and arguments that cannot be read,
+votes on arguments mapped from the request, in a list of subjects and on an invokable controller,
 `#[PublicRoute]` and the route option, the firewalls and `access_control` entries per method label, conditional
 entries and firewalls, entries without roles, host-restricted entries, route attributes —; the security map and its
-validation; the statuses, conflicts and unused rules of the checker; the baseline and its limits; and each format to
+validation; the statuses, conflicts and unused rules of the checker, a vote on a validated argument with and without a check
+before it; the baseline and its limits; and each format to
 the character.
 
 From the monorepo root:

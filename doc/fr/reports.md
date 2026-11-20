@@ -1,4 +1,4 @@
-<!-- phil-dev source-sha256=e6a5f9e45a3b7b9f83d3422a3db35219a870c1cab25bc0bf19fecc34d20ae7f9 -->
+<!-- phil-dev source-sha256=1b864f63a42973efef6f530068d5b39cb181c61b389425c0b3ae90ad972cab22 -->
 # Rapports et ligne de base
 
 `RouteAccessChecker::check()` retourne un `Report` : un `RouteVerdict` par route, dans l'ordre de la collection de
@@ -55,7 +55,7 @@ chemin d'exemple inexact.
             "name": "api_items", "path": "/api/items", "host": null, "methods": [],
             "controller": "App\\Controller\\ApiController::items", "status": "uncovered", "baselined": false,
             "uncoveredMethods": ["GET", "HEAD", "PATCH", "DELETE", "OPTIONS", "*"], "conflicts": [],
-            "rules": [{"source": "access_control", "effect": "protected", "scope": "configuration", "description": "…", "methods": ["POST", "PUT"], "ruleId": "access_control#3"}],
+            "rules": [{"source": "access_control", "effect": "protected", "scope": "configuration", "description": "…", "methods": ["POST", "PUT"], "ruleId": "access_control#3", "validatedSubject": null}],
             "samplePath": "/api/items", "exactSample": true
         }
     ],

@@ -119,6 +119,7 @@ final class FormattersTest extends TestCase
                 'description' => "#[IsGranted('ROLE_USER')] on App\\Export for POST",
                 'methods' => ['POST'],
                 'ruleId' => null,
+                'validatedSubject' => null,
             ]],
             'samplePath' => '/export/1',
             'exactSample' => true,

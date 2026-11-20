@@ -24,6 +24,12 @@ return [
                 'identifier' => 'class.notFound',
                 'paths' => ['tests/Unit/Fixture/AccountController.php'],
             ],
+            // A subject written by position and by name: PHP reads the attribute without instantiating it, and the check
+            // reads the named one, which is what Symfony would refuse on use.
+            [
+                'identifier' => 'argument.duplicate',
+                'paths' => ['tests/Unit/Fixture/PayloadController.php'],
+            ],
             // An attribute of the application's own, read by name: its class is never declared.
             [
                 'identifier' => 'attribute.notFound',

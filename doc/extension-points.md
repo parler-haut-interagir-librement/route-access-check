@@ -28,6 +28,8 @@ interface AccessRuleDetector
   conditional one only informs.
 - A rule written on the route (`RuleScope::Route`) that is public conflicts with a check on the same method; a rule of
   the configuration does not.
+- A protected rule whose `validatedSubject` names an argument conflicts unless a protected rule of the configuration,
+  or one without a validated subject returned before it, covers the same method.
 
 A detector for the routes whose option `signed` is true, checked by a listener of the application:
 
